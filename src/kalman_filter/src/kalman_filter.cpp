@@ -4,6 +4,7 @@
 #include <GL/glut.h>
 #include <vector>
 #include <string>
+#include <fstream>
 #include "kalman.h"
 #include "tools.h"
 #include "target.h"
@@ -14,12 +15,14 @@
 using namespace std;
 
 string target_txt = "/home/wzw/workspace/kalman_filter_ws/src/kalman_filter/src/data/ped0.txt";
+string save_txt = "/home/wzw/workspace/kalman_filter_ws/src/kalman_filter/src/data/ped2.txt";
 
 GLsizei winWidth = 1600;
 GLsizei winHeight = 900;
 float fps = 0;
 bool act = false;
 Target target;
+fstream txt;
 
 int flag = 0;
 int data_num = 0;
@@ -85,6 +88,12 @@ void init()				//初始化opengl
 
 	//读取文件
 	loadData();
+	
+	ofstream new_txt(save_txt,ios_base::out);
+	new_txt.close();
+	txt.open(save_txt);
+	if (!txt)
+		cout << "open " << save_txt << " failed!" << endl;
 }
 
 void loadData()
@@ -269,7 +278,10 @@ void update() {
 
 			target.x = target.tracker.get_state()(0, 0);
 			target.y = target.tracker.get_state()(2, 0);
-
+			txt << data_time[flag] << " " << target.x << " " << target.y << " "
+				<< target.tracker.get_state()(1, 0) 
+				<< target.tracker.get_state()(3, 0) << endl;
+			
 			++i;
 			cout << "step: " << i << endl;
 			if (actTime/1000 >= data_time[data_time.size()-1])
