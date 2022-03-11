@@ -15,7 +15,7 @@
 using namespace std;
 
 string target_txt = "/home/wzw/workspace/kalman_filter_ws/src/kalman_filter/src/data/ped0.txt";
-string save_txt = "/home/wzw/workspace/kalman_filter_ws/src/kalman_filter/src/data/ped2.txt";
+string save_txt = "/home/wzw/data/paper_data/car_go/ped0_kalman_30.txt";
 
 GLsizei winWidth = 1600;
 GLsizei winHeight = 900;
@@ -124,7 +124,8 @@ void loadData()
 	data_file.close();
 	
 //	target.tracker.init(0.1, 0.0, 0.0, 0.0, 0.0, SIGMA_AX, SIGMA_AY, SIGMA_OX, SIGMA_OY);
-	target.tracker.init(0.1, All_measurement_data.getData(0).x + gaussian_noise(0, 0.1), 0.0, All_measurement_data.getData(0).y + gaussian_noise(0, 0.1), 0.0, SIGMA_AX, SIGMA_AY, SIGMA_OX, SIGMA_OY);
+//	target.tracker.init(0.1, All_measurement_data.getData(0).x + gaussian_noise(0, 0.1), 0.0, All_measurement_data.getData(0).y + gaussian_noise(0, 0.1), 0.0, SIGMA_AX, SIGMA_AY, SIGMA_OX, SIGMA_OY);
+	target.tracker.init(0.033, All_measurement_data.getData(0).x + gaussian_noise(0, 0.1), 0.0, All_measurement_data.getData(0).y + gaussian_noise(0, 0.1), 0.0, SIGMA_AX, SIGMA_AY, SIGMA_OX, SIGMA_OY);
 	
 	target.x = target.tracker.get_state()(0, 0);
 	target.y = target.tracker.get_state()(2, 0);
@@ -261,7 +262,8 @@ void update() {
 	
 	if (act) { 
 		actTime+=frameTime;
-		if(actTime >= i * 100)
+		if(actTime >= i * 30)
+//		if(actTime >= i * 100)
 		{
 			for(int k=0; k<data_time.size(); ++k)
 			{
@@ -272,14 +274,15 @@ void update() {
 				}
 			}
 			
-			
 			target.tracker.predict();
 			target.tracker.update(All_measurement_data.getData(flag).x + gaussian_noise(0, 0.1), All_measurement_data.getData(flag).y + gaussian_noise(0, 0.1));
 
 			target.x = target.tracker.get_state()(0, 0);
 			target.y = target.tracker.get_state()(2, 0);
-			txt << data_time[flag] << " " << target.x << " " << target.y << " "
-				<< target.tracker.get_state()(1, 0) 
+			txt << data_time[flag] << " " 
+				<< target.x << " " 
+				<< target.y << " "
+				<< target.tracker.get_state()(1, 0) << " "
 				<< target.tracker.get_state()(3, 0) << endl;
 			
 			++i;
@@ -289,6 +292,7 @@ void update() {
 				flag = 0;
 				i = 0;
 				actTime = 0;
+				act = false;
 			}
 		}
 		

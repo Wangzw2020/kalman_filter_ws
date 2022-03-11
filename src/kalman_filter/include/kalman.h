@@ -8,6 +8,8 @@
 #define SIGMA_OX 0.1             // 量测噪声标准差
 #define SIGMA_OY 0.1             // 量测噪声标准差
 
+using namespace std;
+
 class KalmanFilter4D
 {
 private:
@@ -110,6 +112,8 @@ void KalmanFilter4D::update(double zx, double zy)
     Eigen::Matrix<double, 4, 2> kk;
     kk = pp_ * hh.transpose() * ss.inverse();
 
+	cout << "kalman gain: \n" << kk << endl;
+	
     // 更新xx_和pp_
     xx_ = xx_ + kk * zz;
     pp_ = pp_ - kk * hh * pp_;
